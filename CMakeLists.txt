@@ -9,8 +9,18 @@ project(
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Поиск pybind11 в системе
+# Поиск компонентов Python
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
+
+# Получение директории pybind11 через модуль Python
+execute_process(
+    COMMAND "${Python_EXECUTABLE}" -c "import pybind11; print(pybind11.get_cmake_dir())"
+    OUTPUT_VARIABLE pybind11_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Подключение pybind11
 find_package(pybind11 REQUIRED)
 
-# Создаем модуль из файла main.cpp
-pybind11_add_module(vector_algebra src/main.cpp)
+# Сборка модуля с универсальным путем к исходнику
+pybind11_add_module(vector_algebra ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
